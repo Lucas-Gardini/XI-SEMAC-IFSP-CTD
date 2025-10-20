@@ -1,48 +1,93 @@
-# XI-SEMAC-IFSP-CTD
+# 🖥️ SEMAC XI – Trilha Frontend Vue
 
-This template should help get you started developing with Vue 3 in Vite.
+Bem-vindo(a) ao repositório do minicurso **Trilha Frontend Vue**, ministrado durante a **SEMAC XI** (Semana da Computação - IFSP Catanduva).  
+O objetivo deste projeto é apresentar, de forma prática, os fundamentos do **Vue.js** e o conceito de **componentização**, construindo uma aplicação completa: uma **To Do List** moderna e funcional. 🚀
 
-## Recommended IDE Setup
+---
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## 🧩 Sobre o Projeto
 
-## Recommended Browser Setup
+Este projeto consiste em uma aplicação simples de **gerenciamento de tarefas (To Do List)** utilizando **Vue 3 com TypeScript**, explorando conceitos essenciais:
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) 
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+- 📦 Estrutura de um projeto Vue
+- ⚙️ Criação e reutilização de **componentes**
+- 🧠 Uso de **estados reativos (ref)**
+- 🎨 Estilização com CSS
+- 🧭 Organização de pastas e boas práticas
 
-## Type Support for `.vue` Imports in TS
+---
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+## 🧱 Estrutura do Projeto
 
-## Customize configuration
+```bash
+src/
+ ┣ components/       → Componentes reutilizáveis (formulário, filtros, item, lista)
+ ┣ types/            → Tipos e interfaces TypeScript
+ ┣ App.vue           → Componente principal da aplicação
+ ┣ main.ts           → Ponto de entrada do Vue
+```
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+---
 
-## Project Setup
+## 💻 Tecnologias Utilizadas
 
-```sh
+- **Vue 3** + **TypeScript**
+- **Vite** (ambiente de desenvolvimento rápido)
+- **CSS** puro para estilização
+- **Node.js** (para rodar o ambiente local)
+
+---
+
+## 🚀 Como Executar o Projeto
+
+### 1️⃣ Clonar o repositório
+
+```bash
+git clone https://github.com/Lucas-Gardini/XI-SEMAC-IFSP-CTD.git
+```
+
+### 2️⃣ Acessar a pasta do projeto
+
+```bash
+cd XI-SEMAC-IFSP-CTD
+```
+
+### 3️⃣ Instalar as dependências
+
+```bash
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### 4️⃣ Executar o projeto
 
-```sh
+```bash
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+O servidor será iniciado (geralmente em `http://localhost:5173`).
 
-```sh
-npm run build
-```
+---
 
-### Lint with [ESLint](https://eslint.org/)
+## 🧠 Conceitos Abordados
 
-```sh
-npm run lint
-```
+- Estrutura de um projeto Vue
+- Componentização e reutilização de código
+- Criação de componentes funcionais
+- Manipulação de estado reativo (`ref`)
+- Passagem de dados via **props**
+- Organização e boas práticas
+- Aplicação prática com To Do List
+
+---
+
+## 👨‍💻 Sobre o Autor
+
+**Lucas Gardini**  
+Engenheiro de Software.  
+Atua com **Java/Groovy, .NET, Vue.js e Node.js**, com foco em desenvolvimento de sistemas, arquitetura e boas práticas de código.
+
+📎 **LinkedIn:** [linkedin.com/in/lucasgardini](https://www.linkedin.com/in/lucasgardini)  
+💻 **GitHub:** [@Lucas-Gardini](https://github.com/Lucas-Gardini)  
+📧 **E-mail:** [contato@lucasgardini.com](mailto:contato@lucasgardini.com)
+
+---
