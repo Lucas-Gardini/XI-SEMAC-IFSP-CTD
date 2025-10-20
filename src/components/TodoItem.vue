@@ -2,17 +2,28 @@
 import { computed } from 'vue'
 import type { Todo } from '../types/todo'
 
+// Recebemos a tarefa via props do componente pai (TodoList).
 const props = defineProps<{
   todo: Todo
 }>()
 
+// Definimos os eventos que esse componente pode emitir para o pai.
 const emit = defineEmits<{
   (event: 'toggle', id: string): void
   (event: 'remove', id: string): void
+  (event: 'edit', id: string, description: string): void
 }>()
 
 // Usamos computed para derivar o texto de status a partir dos dados recebidos do pai.
 const statusLabel = computed(() => (props.todo.done ? 'Concluída' : 'Pendente'))
+
+// Função para editar a tarefa
+function editTask() {
+  const newDescription = prompt('Edite a descrição da tarefa:', props.todo.description)
+  if (newDescription !== null && newDescription.trim() !== '') {
+    emit('edit', props.todo.id, newDescription)
+  }
+}
 </script>
 
 <template>
@@ -28,7 +39,8 @@ const statusLabel = computed(() => (props.todo.done ? 'Concluída' : 'Pendente')
         </small>
       </div>
     </label>
-    <button class="delete" type="button" @click="emit('remove', todo.id)">excluir</button>
+    <button class="edit" @click="editTask">editar</button>
+    <button class="delete" @click="emit('remove', todo.id)">excluir</button>
   </li>
 </template>
 
@@ -72,6 +84,14 @@ const statusLabel = computed(() => (props.todo.done ? 'Concluída' : 'Pendente')
 
 .todo-item .meta {
   color: #64748b;
+}
+
+.todo-item .edit {
+  border: none;
+  background: none;
+  color: #3b82f6;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .todo-item .delete {

@@ -9,6 +9,7 @@ defineProps<{
 const emit = defineEmits<{
   (event: 'toggle-task', id: string): void
   (event: 'remove-task', id: string): void
+  (event: 'edit-task', id: string, description: string): void
 }>()
 </script>
 
@@ -26,6 +27,7 @@ const emit = defineEmits<{
         :todo="todo"
         @toggle="emit('toggle-task', $event)"
         @remove="emit('remove-task', $event)"
+        @edit="(id, description) => emit('edit-task', id, description)"
       />
     </TransitionGroup>
 

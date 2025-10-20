@@ -47,6 +47,13 @@ function removeTodo(id: string) {
   todos.value = todos.value.filter((todo) => todo.id !== id)
 }
 
+function editTodo(id: string, description: string) {
+  const todo = todos.value.find((todo) => todo.id === id)
+  if (todo) {
+    todo.description = description
+  }
+}
+
 // Sempre que as tarefas mudarem, persistimos a nova lista.
 watch(
   todos,
@@ -85,7 +92,12 @@ onMounted(() => {
 
       <TodoFilters v-model="activeFilter" />
 
-      <TodoList :todos="filteredTodos" @toggle-task="toggleTodo" @remove-task="removeTodo" />
+      <TodoList
+        :todos="filteredTodos"
+        @toggle-task="toggleTodo"
+        @remove-task="removeTodo"
+        @edit-task="editTodo"
+      />
 
       <footer class="app-footer" role="status">
         <strong class="quantity">{{ remainingCount }}</strong>
