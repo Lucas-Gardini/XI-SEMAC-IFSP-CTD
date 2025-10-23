@@ -1,15 +1,12 @@
-// A estrutura principal de uma tarefa para a aplicação de To-Do.
-// Definimos aqui para que o tipo possa ser reutilizado em vários componentes
-export interface Todo {
+const STORAGE_KEY = 'mini-course-todos'
+
+type FilterOption = 'todas' | 'pendentes' | 'concluidas'
+
+interface Todo {
   id: string
-  description: string
+  text: string
   done: boolean
-  createdAt: string
 }
 
-// Filtros aceitos pela aplicação para controlar quais tarefas aparecem.
-export enum TodoFilter {
-  TODOS = 'todos',
-  PENDENTES = 'pendentes',
-  COMPLETOS = 'completos',
-}
+export { STORAGE_KEY }
+export type { Todo, FilterOption }

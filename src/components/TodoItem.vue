@@ -1,108 +1,72 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { Todo } from '../types/todo'
+import type { Todo } from '@/types/todo'
 
-// Recebemos a tarefa via props do componente pai (TodoList).
 const props = defineProps<{
   todo: Todo
 }>()
 
-// Definimos os eventos que esse componente pode emitir para o pai.
 const emit = defineEmits<{
   (event: 'toggle', id: string): void
   (event: 'remove', id: string): void
-  (event: 'edit', id: string, description: string): void
+  (event: 'edit', id: string, newText: string): void
 }>()
 
-// Usamos computed para derivar o texto de status a partir dos dados recebidos do pai.
-const statusLabel = computed(() => (props.todo.done ? 'Concluída' : 'Pendente'))
+const toggle = () => emit('toggle', props.todo.id)
+const remove = () => emit('remove', props.todo.id)
 
-// Função para editar a tarefa
-function editTask() {
-  const newDescription = prompt('Edite a descrição da tarefa:', props.todo.description)
-  if (newDescription !== null && newDescription.trim() !== '') {
-    emit('edit', props.todo.id, newDescription)
+function edit() {
+  const newText = prompt('Alterar tarefa', props.todo.text)
+  if (newText !== null && newText.trim()) {
+    emit('edit', props.todo.id, newText.trim())
   }
 }
 </script>
 
 <template>
-  <li class="todo-item">
-    <label class="info">
-      <input type="checkbox" :checked="todo.done" @change="emit('toggle', todo.id)" />
-      <div class="texts">
-        <span class="description" :class="{ 'description-done': todo.done }">
-          {{ todo.description }}
-        </span>
-        <small class="meta">
-          {{ statusLabel }} • Criada em {{ new Date(todo.createdAt).toLocaleString() }}
-        </small>
-      </div>
+  <li class="item">
+    <label>
+      <input type="checkbox" :checked="todo.done" @change="toggle" />
+      <span :class="{ done: todo.done }">{{ todo.text }}</span>
     </label>
-    <button class="edit" @click="editTask">editar</button>
-    <button class="delete" @click="emit('remove', todo.id)">excluir</button>
+    <button type="button" class="edit" @click="edit">Editar</button>
+    <button type="button" class="remove" @click="remove">Excluir</button>
   </li>
 </template>
 
 <style scoped>
-.todo-item {
+.item {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   gap: 1rem;
   padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: #f8fafc;
 }
 
-.todo-item .info {
+.item label {
   display: flex;
-  align-items: flex-start;
   gap: 0.75rem;
+  align-items: center;
   flex: 1;
 }
 
-.todo-item .info input[type='checkbox'] {
-  width: 1.15rem;
-  height: 1.15rem;
-  cursor: pointer;
-}
-
-.todo-item .info .texts {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.todo-item .info .description {
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.todo-item .info .description-done {
+.item span.done {
   text-decoration: line-through;
-  color: #94a3b8;
+  color: #6b7280;
 }
 
-.todo-item .meta {
-  color: #64748b;
-}
-
-.todo-item .edit {
+.remove {
   border: none;
-  background: none;
-  color: #3b82f6;
-  font-weight: 600;
+  background: transparent;
+  color: #dc2626;
   cursor: pointer;
 }
 
-.todo-item .delete {
+.edit {
   border: none;
-  background: none;
-  color: #ef4444;
-  font-weight: 600;
+  background: transparent;
+  color: #2563eb;
   cursor: pointer;
-}
-
-.todo-item .delete:hover {
-  text-decoration: underline;
 }
 </style>

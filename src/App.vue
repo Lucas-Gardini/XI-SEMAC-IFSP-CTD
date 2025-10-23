@@ -1,60 +1,60 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import TodoFilters from './components/TodoFilters.vue'
-import TodoForm from './components/TodoForm.vue'
-import TodoList from './components/TodoList.vue'
-import { TodoFilter } from './types/todo'
-import type { Todo } from './types/todo'
 
-// Chave usada para persistir as tarefas no armazenamento local do navegador.
-const STORAGE_KEY = 'todos'
+import { STORAGE_KEY, type FilterOption, type Todo } from './types/todo'
 
-// Estado reativo principal da aplicação.
+import TodoItem from './components/TodoItem.vue'
+
 const todos = ref<Todo[]>([])
-const activeFilter = ref<TodoFilter>(TodoFilter.TODOS)
+const newTodo = ref('')
+const filter = ref<FilterOption>('todas')
 
-// Computed demonstra como derivar dados reativos sem repetir lógica manualmente.
-const filteredTodos = computed(() => {
-  switch (activeFilter.value) {
-    case TodoFilter.COMPLETOS:
-      return todos.value.filter((todo) => todo.done)
-    case TodoFilter.PENDENTES:
-      return todos.value.filter((todo) => !todo.done)
-    default:
-      return todos.value
+const visibleTodos = computed(() => {
+  if (filter.value === 'pendentes') {
+    return todos.value.filter((todo) => !todo.done)
   }
+
+  if (filter.value === 'concluidas') {
+    return todos.value.filter((todo) => todo.done)
+  }
+
+  return todos.value
 })
 
-const remainingCount = computed(() => todos.value.filter((todo) => !todo.done).length)
+const pendingCount = computed(() => todos.value.filter((todo) => !todo.done).length)
 
-function addTodo(description: string) {
+function addTodo() {
+  const text = newTodo.value.trim()
+  if (!text) return
+
   todos.value.push({
     id: crypto.randomUUID(),
-    description,
+    text,
     done: false,
-    createdAt: new Date().toISOString(),
   })
+
+  newTodo.value = ''
+}
+
+function editTodo(id: string, newText: string) {
+  const todo = todos.value.find((item) => item.id === id)
+  const trimmedText = newText.trim()
+  if (todo && trimmedText) {
+    todo.text = trimmedText
+  }
 }
 
 function toggleTodo(id: string) {
-  const todo = todos.value.find((todo) => todo.id === id)
+  const todo = todos.value.find((item) => item.id === id)
   if (todo) {
     todo.done = !todo.done
   }
 }
 
 function removeTodo(id: string) {
-  todos.value = todos.value.filter((todo) => todo.id !== id)
+  todos.value = todos.value.filter((item) => item.id !== id)
 }
 
-function editTodo(id: string, description: string) {
-  const todo = todos.value.find((todo) => todo.id === id)
-  if (todo) {
-    todo.description = description
-  }
-}
-
-// Sempre que as tarefas mudarem, persistimos a nova lista.
 watch(
   todos,
   (value) => {
@@ -63,95 +63,155 @@ watch(
   { deep: true },
 )
 
-// Exemplo simples do ciclo de vida dos componentes: ao montar, carregamos os dados.
 onMounted(() => {
-  const persisted = window.localStorage.getItem(STORAGE_KEY)
-  if (persisted) {
-    try {
-      todos.value = JSON.parse(persisted) as Todo[]
-    } catch (error) {
-      console.warn('Não foi possível ler as tarefas salvas anteriormente.', error)
-    }
+  const saved = window.localStorage.getItem(STORAGE_KEY)
+  if (saved) {
+    todos.value = JSON.parse(saved) as Todo[]
   }
 })
 </script>
 
 <template>
   <main class="app">
-    <header class="app-header">
-      <h1 class="app-title">Trilha Vue.js - Lista de Tarefas</h1>
-      <p class="app-subtitle">
-        Gerencie suas atividades diárias praticando os conceitos essenciais do framework.
-      </p>
-    </header>
+    <h1>Lista de Tarefas</h1>
 
-    <section class="app-content">
-      <TodoForm @add-task="addTodo" />
-
-      <hr style="width: 100%" />
-
-      <TodoFilters v-model="activeFilter" />
-
-      <TodoList
-        :todos="filteredTodos"
-        @toggle-task="toggleTodo"
-        @remove-task="removeTodo"
-        @edit-task="editTodo"
+    <form class="form" @submit.prevent="addTodo">
+      <input
+        v-model="newTodo"
+        type="text"
+        placeholder="Ex: preparar material do minicurso"
+        aria-label="Descrição da tarefa"
       />
+      <button type="submit">Adicionar</button>
+    </form>
 
-      <footer class="app-footer" role="status">
-        <strong class="quantity">{{ remainingCount }}</strong>
-        <span>
-          {{ remainingCount === 1 ? 'tarefa pendente' : 'tarefas pendentes' }} para conquistar hoje
-        </span>
-      </footer>
+    <section class="filters" aria-label="Filtros de tarefas">
+      <button type="button" :class="{ active: filter === 'todas' }" @click="filter = 'todas'">
+        Todas
+      </button>
+      <button
+        type="button"
+        :class="{ active: filter === 'pendentes' }"
+        @click="filter = 'pendentes'"
+      >
+        Pendentes
+      </button>
+      <button
+        type="button"
+        :class="{ active: filter === 'concluidas' }"
+        @click="filter = 'concluidas'"
+      >
+        Concluídas
+      </button>
     </section>
+
+    <ul class="list">
+      <TodoItem
+        v-for="todo in visibleTodos"
+        :key="todo.id"
+        :todo="todo"
+        @toggle="toggleTodo"
+        @edit="editTodo"
+        @remove="removeTodo"
+      />
+    </ul>
+
+    <p v-if="visibleTodos.length === 0" class="empty">Nenhuma tarefa por aqui ainda.</p>
+
+    <footer class="status" role="status">
+      <strong>{{ pendingCount }}</strong>
+      <span>{{ pendingCount === 1 ? 'tarefa pendente' : 'tarefas pendentes' }}</span>
+    </footer>
   </main>
 </template>
 
 <style>
-html,
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-  background-color: #eee;
-  color: #333;
+  font-family: 'Segoe UI';
+  background: #f5f5f5;
+  color: #222;
 }
 
 .app {
+  max-width: 480px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.app .app-header {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-.app .app-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: #fff;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 500px;
   gap: 1.5rem;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
 }
 
-.app .app-footer {
-  margin-top: 1.5rem;
+.app h1 {
+  margin: 0;
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.form input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+}
+
+.form button {
+  padding: 0.75rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  background: #16a34a;
+  color: #fff;
+  cursor: pointer;
+}
+
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.filters button {
+  padding: 0.5rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: #e5e7eb;
+  cursor: pointer;
+}
+
+.filters button.active {
+  background: #16a34a;
+  color: #fff;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.empty {
+  text-align: center;
+  color: #6b7280;
+}
+
+.status {
   display: flex;
   gap: 0.5rem;
+  justify-content: center;
   align-items: center;
-}
-
-.app .app-footer .quantity {
-  font-size: 1.25rem;
 }
 </style>
