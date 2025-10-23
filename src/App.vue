@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 
+import TodoItem from './components/TodoItem.vue'
+
 type FilterOption = 'all' | 'pending' | 'done'
 
 interface Todo {
@@ -94,13 +96,7 @@ onMounted(() => {
     </section>
 
     <ul class="list">
-      <li v-for="todo in visibleTodos" :key="todo.id" class="item">
-        <label>
-          <input type="checkbox" :checked="todo.done" @change="toggleTodo(todo.id)" />
-          <span :class="{ done: todo.done }">{{ todo.text }}</span>
-        </label>
-        <button type="button" class="remove" @click="removeTodo(todo.id)">Excluir</button>
-      </li>
+      <TodoItem v-for="todo in visibleTodos" :key="todo.id" :todo="todo" @toggle="toggleTodo" @remove="removeTodo" />
     </ul>
 
     <p v-if="visibleTodos.length === 0" class="empty">Nenhuma tarefa por aqui ainda.</p>
@@ -188,35 +184,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-}
-
-.item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  background: #f8fafc;
-}
-
-.item label {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  flex: 1;
-}
-
-.item span.done {
-  text-decoration: line-through;
-  color: #6b7280;
-}
-
-.remove {
-  border: none;
-  background: transparent;
-  color: #dc2626;
-  cursor: pointer;
 }
 
 .empty {
