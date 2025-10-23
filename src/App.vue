@@ -1,28 +1,20 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 
+import { STORAGE_KEY, type FilterOption, type Todo } from './types/todo'
+
 import TodoItem from './components/TodoItem.vue'
-
-type FilterOption = 'all' | 'pending' | 'done'
-
-interface Todo {
-  id: string
-  text: string
-  done: boolean
-}
-
-const STORAGE_KEY = 'mini-course-todos'
 
 const todos = ref<Todo[]>([])
 const newTodo = ref('')
-const filter = ref<FilterOption>('all')
+const filter = ref<FilterOption>('todas')
 
 const visibleTodos = computed(() => {
-  if (filter.value === 'pending') {
+  if (filter.value === 'pendentes') {
     return todos.value.filter((todo) => !todo.done)
   }
 
-  if (filter.value === 'done') {
+  if (filter.value === 'concluidas') {
     return todos.value.filter((todo) => todo.done)
   }
 
@@ -42,6 +34,13 @@ function addTodo() {
   })
 
   newTodo.value = ''
+}
+
+function editTodo(id: string, newText: string) {
+  const todo = todos.value.find((item) => item.id === id)
+  if (todo) {
+    todo.text = newText
+  }
 }
 
 function toggleTodo(id: string) {
@@ -86,17 +85,34 @@ onMounted(() => {
     </form>
 
     <section class="filters" aria-label="Filtros de tarefas">
-      <button type="button" :class="{ active: filter === 'all' }" @click="filter = 'all'">Todas</button>
-      <button type="button" :class="{ active: filter === 'pending' }" @click="filter = 'pending'">
+      <button type="button" :class="{ active: filter === 'todas' }" @click="filter = 'todas'">
+        Todas
+      </button>
+      <button
+        type="button"
+        :class="{ active: filter === 'pendentes' }"
+        @click="filter = 'pendentes'"
+      >
         Pendentes
       </button>
-      <button type="button" :class="{ active: filter === 'done' }" @click="filter = 'done'">
+      <button
+        type="button"
+        :class="{ active: filter === 'concluidas' }"
+        @click="filter = 'concluidas'"
+      >
         Concluídas
       </button>
     </section>
 
     <ul class="list">
-      <TodoItem v-for="todo in visibleTodos" :key="todo.id" :todo="todo" @toggle="toggleTodo" @remove="removeTodo" />
+      <TodoItem
+        v-for="todo in visibleTodos"
+        :key="todo.id"
+        :todo="todo"
+        @toggle="toggleTodo"
+        @edit="editTodo"
+        @remove="removeTodo"
+      />
     </ul>
 
     <p v-if="visibleTodos.length === 0" class="empty">Nenhuma tarefa por aqui ainda.</p>
@@ -115,7 +131,7 @@ onMounted(() => {
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Segoe UI';
   background: #f5f5f5;
   color: #222;
 }
