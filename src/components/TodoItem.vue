@@ -1,10 +1,8 @@
 <script setup lang="ts">
+import type { Todo } from '@/types/todo'
+
 const props = defineProps<{
-  todo: {
-    id: string
-    text: string
-    done: boolean
-  }
+  todo: Todo
 }>()
 
 const emit = defineEmits<{
