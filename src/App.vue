@@ -28,7 +28,7 @@ function addTodo() {
   if (!text) return
 
   todos.value.push({
-    id: Date.now().toString(),
+    id: crypto.randomUUID(),
     text,
     done: false,
   })
@@ -38,8 +38,9 @@ function addTodo() {
 
 function editTodo(id: string, newText: string) {
   const todo = todos.value.find((item) => item.id === id)
-  if (todo) {
-    todo.text = newText
+  const trimmedText = newText.trim()
+  if (todo && trimmedText) {
+    todo.text = trimmedText
   }
 }
 

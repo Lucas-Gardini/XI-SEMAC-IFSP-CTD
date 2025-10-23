@@ -16,7 +16,7 @@ const remove = () => emit('remove', props.todo.id)
 
 function edit() {
   const newText = prompt('Alterar tarefa', props.todo.text)
-  if (newText !== null) {
+  if (newText !== null && newText.trim()) {
     emit('edit', props.todo.id, newText.trim())
   }
 }
